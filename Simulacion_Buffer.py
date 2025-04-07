@@ -1,22 +1,38 @@
 import time
+import random
+
 class Nodo:
     def __init__(self, nombre):
         self.nombre = nombre
         self.conected = []
+        self.buffer = []  # Buffer para almacenar mensajes pendientes
+
     def agregar_conexion(self, nodo):
         if nodo not in self.conected:
             self.conected.append(nodo)
             nodo.conected.append(self)
             print(f"{self.nombre} se ha conectado con {nodo.nombre}")
 
-        print(f"{self.nombre} esta conectado con {nodo}")
     def enviar_message(self, message):
         if self.conected:
             print(f"{self.nombre} enviando mensaje: '{message}'")
             for nodo in self.conected:
                 nodo.recibir_message(message, self)
+
     def recibir_message(self, message, nodo):
-        print(f"{self.nombre} ha recibido un mensaje de {nodo.nombre}: '{message}'")
+        # Simular pérdida de paquetes con random
+        if random.random() > 0.2:  # 80% de probabilidad de recibir el mensaje
+            print(f"{self.nombre} ha recibido un mensaje de {nodo.nombre}: '{message}'")
+            self.buffer.append((message, nodo))  # Almacenar mensaje en el buffer
+        else:
+            print(f"{self.nombre} perdió un mensaje de {nodo.nombre}: '{message}'")
+
+    def procesar_buffer(self):
+        print(f"{self.nombre} procesando mensajes en el buffer...")
+        while self.buffer:
+            message, nodo = self.buffer.pop(0)  # Procesar el primer mensaje en el buffer
+            print(f"{self.nombre} procesó el mensaje de {nodo.nombre}: '{message}'")
+
     def remove_conection(self, nodo):
         if nodo in self.conected:
             self.conected.remove(nodo)
@@ -24,35 +40,28 @@ class Nodo:
             print(f"{self.nombre} se ha desconectado de {nodo.nombre}")
         else:
             print(f"{self.nombre} no está conectado a {nodo.nombre}")
-        print(f"{self.nombre} esta desconectado de {nodo}")
 
+# Simulación
 server = Nodo("Servidor")
 cliente1 = Nodo("Cliente 1")
 cliente2 = Nodo("Cliente 2")
 cliente3 = Nodo("Cliente 3")
 
+# Conexiones iniciales
 server.agregar_conexion(cliente1)
 server.agregar_conexion(cliente2)
 cliente1.agregar_conexion(cliente3)
 
-print("Simulando conexión y envío de mensajes…")
+# Mensajes iniciales
+print("\n--- Enviando mensajes ---")
 server.enviar_message("Hola, ¿cómo estás?")
-time.sleep(2)
-print("Simulando desconexión y reconexión dinámica…")
-cliente1.enviar_message("Hola, estoy gay. ¿Y tú?")
+cliente1.enviar_message("Hola, estoy bien. ¿Y tú?")
 cliente2.enviar_message("No me importa cliente 1, trabaja más")
 cliente3.enviar_message("Hola, cliente 2. ¿Qué tal?")
 
-print("Simulando desconexión y reconexión dinámica…")
-server.remove_conection(cliente1)
-time.sleep(2)
-cliente1.remove_conection(cliente3)
-print("Simulacion de conexion de cliente 1 y cliente 3")
-time.sleep(2)
-server.agregar_conexion(cliente1)
-cliente1.agregar_conexion(cliente3)
-
-server.enviar_message("Hola, ¿cómo estás?")
-cliente1.enviar_message("Hola, estoy bien. ¿Y tú?")
-
-server.enviar_message("¡HOLA A TODOS DE NUEVO!")
+# Procesar buffers
+print("\n--- Procesando buffers ---")
+server.procesar_buffer()
+cliente1.procesar_buffer()
+cliente2.procesar_buffer()
+cliente3.procesar_buffer()
