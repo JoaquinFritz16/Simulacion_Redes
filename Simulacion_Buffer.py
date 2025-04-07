@@ -52,14 +52,14 @@ server.agregar_conexion(cliente1)
 server.agregar_conexion(cliente2)
 cliente1.agregar_conexion(cliente3)
 
-# Mensajes iniciales
+
 print("\n--- Enviando mensajes ---")
 server.enviar_message("Hola, ¿cómo estás?")
 cliente1.enviar_message("Hola, estoy bien. ¿Y tú?")
 cliente2.enviar_message("No me importa cliente 1, trabaja más")
 cliente3.enviar_message("Hola, cliente 2. ¿Qué tal?")
 
-# Procesar buffers
+
 print("\n--- Procesando buffers ---")
 server.procesar_buffer()
 cliente1.procesar_buffer()
